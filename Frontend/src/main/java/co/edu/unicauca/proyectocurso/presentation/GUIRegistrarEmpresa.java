@@ -222,7 +222,7 @@ public class GUIRegistrarEmpresa extends javax.swing.JFrame {
                 Company company = companyService.getCompanyByUserId(userId);
         this.dispose();
         JOptionPane.showMessageDialog(this, "Bienvenido, Empresa: " + username);
-        GUICompany companyGUI = new GUICompany();
+        GUICompany companyGUI = new GUICompany(company);
         companyGUI.setVisible(true);
         } else {
             JOptionPane.showMessageDialog(this, "Error al registrar la empresa", 
