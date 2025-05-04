@@ -1,6 +1,5 @@
 package com.example.project.service;
 
-
 import com.example.project.entity.Project;
 import com.example.project.entity.ProjectStatus;
 import com.example.project.infra.dto.ProjectRequest;
@@ -32,7 +31,7 @@ public class ProjectService {
                 .budget(request.getBudget())
                 .startDate(request.getStartDate())
                 .companyNIT(request.getCompanyNIT())
-                .status(ProjectStatus.PENDIENTE)
+                .status(ProjectStatus.RECEIVED) //  Estado inicial actualizado
                 .build();
 
         Project saved = repository.save(project);
@@ -61,8 +60,8 @@ public class ProjectService {
 
     public Optional<Project> updateProject(UUID id, ProjectRequest request) {
         return repository.findById(id).map(existing -> {
-            if (existing.getStatus() != ProjectStatus.PENDIENTE) {
-                throw new IllegalStateException("Solo se pueden editar proyectos en estado PENDIENTE");
+            if (existing.getStatus() != ProjectStatus.RECEIVED) {
+                throw new IllegalStateException("Solo se pueden editar proyectos en estado RECEIVED");
             }
 
             existing.setName(request.getName());
@@ -79,14 +78,15 @@ public class ProjectService {
 
     public boolean deleteProject(UUID id) {
         return repository.findById(id).map(project -> {
-            if (project.getStatus() != ProjectStatus.PENDIENTE) {
-                throw new IllegalStateException("Solo se pueden eliminar proyectos en estado PENDIENTE");
+            if (project.getStatus() != ProjectStatus.RECEIVED) {
+                throw new IllegalStateException("Solo se pueden eliminar proyectos en estado RECEIVED");
             }
 
             repository.deleteById(id);
             return true;
         }).orElse(false);
     }
+
     public List<Project> getAllProjects() {
         return repository.findAll();
     }
