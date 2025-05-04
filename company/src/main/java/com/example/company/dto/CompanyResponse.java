@@ -1,9 +1,13 @@
-package com.example.company.infra.dto;
+package com.example.company.dto;
 
-import lombok.Data;
+
+import lombok.*;
 
 @Data
-public class CompanyRequest {
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class CompanyResponse {
     private String nit;
     private String name;
     private String sector;
@@ -11,5 +15,4 @@ public class CompanyRequest {
     private String contactFirstName;
     private String contactLastName;
     private String contactPosition;
-
 }

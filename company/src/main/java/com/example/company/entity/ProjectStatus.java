@@ -1,4 +1,4 @@
-package com.example.project.entity;
+package com.example.company.entity;
 
 
 public enum ProjectStatus {

@@ -1,25 +1,23 @@
 package com.example.company.entity;
 
-
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-@Builder
+import lombok.*;
+
+import java.util.UUID;
+
+@Entity
+@Table(name = "companies")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "companies", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "nit")
-})
 public class Company {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @Column(nullable = false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @Column(nullable = false, unique = true)
     private String nit;
 
     @Column(nullable = false)
@@ -30,4 +28,10 @@ public class Company {
     private String contactFirstName;
     private String contactLastName;
     private String contactPosition;
+
+    // Puedes agregar la relación si luego la necesitas:
+    // @OneToMany(mappedBy = "companyNIT", cascade = CascadeType.ALL)
+    // private List<Project> projects;
 }
+
+
