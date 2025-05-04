@@ -6,6 +6,8 @@ package co.edu.unicauca.proyectocurso.presentation;
 
 import co.edu.unicauca.proyectocurso.access.CompanyRepositoryImpl;
 import co.edu.unicauca.proyectocurso.access.UserRepositoryImpl;
+import co.edu.unicauca.proyectocurso.domain.entities.Company;
+import co.edu.unicauca.proyectocurso.domain.entities.User;
 import co.edu.unicauca.proyectocurso.domain.services.CompanyService;
 import co.edu.unicauca.proyectocurso.domain.services.UserService;
 import javax.swing.JOptionPane;
@@ -213,6 +215,11 @@ public class GUIRegistrarEmpresa extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Empresa registrada correctamente");
                 UserService userServiceForUpdate = new UserService(new UserRepositoryImpl());
                 boolean actualizado = userServiceForUpdate.updateProfileCompleted(username, true);
+                                UserService userService = new UserService(new UserRepositoryImpl());
+                 User user = userService.getUser(username); // ← corregido aquí
+                int userId = user.getId();
+                CompanyService companyService = new CompanyService(new CompanyRepositoryImpl());
+                Company company = companyService.getCompanyByUserId(userId);
         this.dispose();
         JOptionPane.showMessageDialog(this, "Bienvenido, Empresa: " + username);
         GUICompany companyGUI = new GUICompany();
