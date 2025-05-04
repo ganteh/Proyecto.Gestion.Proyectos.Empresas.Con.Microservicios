@@ -9,12 +9,12 @@
         <module name="project" />
         <module name="company" />
         <module name="login" />
-        <module name="student" />
         <module name="coordination" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="ProyectoEmpresa" target="17" />
+      <module name="student" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
