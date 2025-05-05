@@ -24,7 +24,7 @@ import java.time.Duration;
 public class CompanyRepositoryImpl implements ICompanyRepository {
 
     // URL base para apuntar al controlador Spring Boot
-    private static final String BASE_URL = "http://localhost:8080/api/companies"; 
+    private static final String BASE_URL = "http://localhost:8083/api/companies"; 
     
     private final HttpClient client;
     private final Gson gson;

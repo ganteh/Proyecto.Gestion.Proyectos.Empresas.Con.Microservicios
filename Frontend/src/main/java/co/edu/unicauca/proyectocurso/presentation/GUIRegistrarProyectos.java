@@ -97,7 +97,6 @@ public GUIRegistrarProyectos(String nit) {
 
         jLabel11.setText("Nit");
 
-        txtNIT.setEditable(false);
         txtNIT.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtNITActionPerformed(evt);
