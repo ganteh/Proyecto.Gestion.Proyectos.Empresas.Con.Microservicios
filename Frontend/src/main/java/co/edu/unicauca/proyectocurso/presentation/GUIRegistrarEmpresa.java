@@ -216,10 +216,18 @@ public class GUIRegistrarEmpresa extends javax.swing.JFrame {
                 UserService userServiceForUpdate = new UserService(new UserRepositoryImpl());
                 boolean actualizado = userServiceForUpdate.updateProfileCompleted(username, true);
                                 UserService userService = new UserService(new UserRepositoryImpl());
-                 User user = userService.getUser(username); // ← corregido aquí
+                 User user = userService.getUser(username); // ← corregido 
                 int userId = user.getId();
                 CompanyService companyService = new CompanyService(new CompanyRepositoryImpl());
-                Company company = companyService.getCompanyByUserId(userId);
+                Company company = new Company();
+    company.setNit(nit);
+    company.setName(nombre);
+    company.setSector(sector);
+    company.setContactPhone(telefono);
+    company.setContactFirstName(contactoNombre);
+    company.setContactLastName(contactoApellido);
+    company.setContactPosition(contactoCargo);
+    company.setId(id); // Usar el id pasado al constructor;
         this.dispose();
         JOptionPane.showMessageDialog(this, "Bienvenido, Empresa: " + username);
         GUICompany companyGUI = new GUICompany(company);

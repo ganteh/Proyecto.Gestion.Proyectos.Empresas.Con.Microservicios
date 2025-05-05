@@ -167,7 +167,7 @@ public User getUser(String username) {
     // Método para buscar usuarios por query
     public List<User> searchUsers(String query) {
         try {
-            String apiUrl = baseUrl + "/users/search?query=" + query;
+            String apiUrl = baseUrl + "/users/" + query;
             HttpGet request = new HttpGet(apiUrl);
             request.setHeader("Accept", "application/json");
             
