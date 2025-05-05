@@ -33,7 +33,7 @@ public class ProjectController {
     }
 
     @PutMapping("/{id}/reject")
-    public ResponseEntity<String> rejectProject(@PathVariable UUID id, @RequestBody String justificacion) {
+    public ResponseEntity<String> rejectProject(@PathVariable UUID id) {
         try {
             projectService.rejectProject(id);
             return ResponseEntity.ok("Proyecto rechazado correctamente con justificación.");
