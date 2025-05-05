@@ -12,8 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
-
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -22,26 +20,12 @@ public class CompanyConsumer {
     private final CompanyRepository companyRepository;
     private final ProjectRepository projectRepository;
 
-    @RabbitListener(queues = "company-registration-queue")
-    public void receiveCompany(CompanyEvent dto) {
-        log.info("📥 Recibida empresa desde la cola: {}", dto);
-
-        Company company = Company.builder()
-                .nit(dto.getNit())
-                .name(dto.getName())
-                .sector(dto.getSector())
-                .contactPhone(dto.getContactPhone())
-                .contactFirstName(dto.getContactFirstName())
-                .contactLastName(dto.getContactLastName())
-                .contactPosition(dto.getContactPosition())
-                .build();
-
-        companyRepository.save(company);
-    }
-
-    @RabbitListener(queues = "project-approval-queue")
-    public void receiveApprovedProject(ProjectEvent dto) {
-        log.info("📥 Recibido proyecto aprobado: {}", dto);
+    /**
+     *  Escucha los proyectos enviados por Cristóbal desde project.events.queue
+     */
+    @RabbitListener(queues = "project.events.queue")
+    public void receiveProjectFromCristobal(ProjectEvent dto) {
+        log.info("📥 Proyecto recibido desde Cristóbal: {}", dto);
 
         Project project = Project.builder()
                 .id(dto.getId())
@@ -57,5 +41,25 @@ public class CompanyConsumer {
                 .build();
 
         projectRepository.save(project);
+    }
+
+    /**
+     *  Escucha las empresas nuevas desde Adrián (login) por company.queue
+     */
+    @RabbitListener(queues = "company.queue")
+    public void receiveCompanyFromLogin(CompanyEvent dto) {
+        log.info("📥 Empresa recibida desde login (Adrián): {}", dto);
+
+        Company company = Company.builder()
+                .nit(dto.getNit())
+                .name(dto.getName())
+                .sector(dto.getSector())
+                .contactPhone(dto.getContactPhone())
+                .contactFirstName(dto.getContactFirstName())
+                .contactLastName(dto.getContactLastName())
+                .contactPosition(dto.getContactPosition())
+                .build();
+
+        companyRepository.save(company);
     }
 }

@@ -102,7 +102,8 @@ public class ProjectService {
             event.setCompanyNIT(saved.getCompanyNIT());
             event.setStatus(saved.getStatus().name());
 
-            publisher.publishProjectApproved(event);
+            publisher.publishApprovedProject(event);
+
 
             return toResponse(saved);
         });

@@ -15,14 +15,17 @@ public class ProjectPublisher {
 
     private final RabbitTemplate rabbitTemplate;
 
-    public void publishProjectApproved(ProjectEvent event) {
-        log.info("📤 Enviando proyecto aprobado a la exchange: {}", event);
-
+    /**
+     *  Publica un proyecto aprobado al exchange para Yeison y Cristóbal
+     */
+    public void publishApprovedProject(ProjectEvent projectEvent) {
+        log.info("📤 Enviando proyecto aprobado a exchange: {}", projectEvent);
         rabbitTemplate.convertAndSend(
-                RabbitMQCompanyConfig.PROJECT_EVENTS_EXCHANGE, // exchange tipo fanout
-                "", // sin routing key, porque fanout lo ignora
-                event
+                RabbitMQCompanyConfig.PROJECT_EVENTS_EXCHANGE,
+                "", // FanoutExchange ignora la routingKey
+                projectEvent
         );
     }
 }
+
 
