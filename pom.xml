@@ -16,9 +16,9 @@
     <modules>
         <module>company</module>
         <module>coordination</module>
+        <module>company</module>
         <module>student</module>
         <module>login</module>
-        <module>project</module>
         <module>Frontend</module>
     </modules>
 

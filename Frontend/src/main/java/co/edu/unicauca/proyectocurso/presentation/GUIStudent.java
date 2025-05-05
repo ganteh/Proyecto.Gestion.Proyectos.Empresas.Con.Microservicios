@@ -257,20 +257,19 @@ public class GUIStudent extends javax.swing.JFrame implements Observer{
         // Limpiar la tabla
         tableModel.setRowCount(0);
         
-        // Cargar los proyectos
-        /*
-        List<Object[]> projects = studentService.getAvailableProjects();
+    List<Project> proyectos = projectService.listProjects(); // Llama al servicio para obtener los proyectos
+
+    for (Project p : proyectos) {
+        Object[] rowData = {
+            p.getId(),                         // ID del proyecto
+            p.getDate().toString(),            // Fecha del proyecto (convertida a String)
+            p.getCompany().getName(),          // Nombre de la empresa asociada
+            p.getName(),                       // Nombre del proyecto
+            p.getSummary()                     // Descripción/resumen
+        };
+        tableModel.addRow(rowData); // Agrega una fila por cada proyecto
+    }
         
-        for (Object[] project : projects) {
-            tableModel.addRow(new Object[]{
-                project[0], // ID
-                project[1], // Fecha
-                project[2], // Empresa
-                project[3], // Nombre Proyecto
-                project[4]  // Descripción
-            });
-        }
-        */
     }
 
 

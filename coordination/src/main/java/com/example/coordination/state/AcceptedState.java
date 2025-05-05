@@ -28,12 +28,10 @@ public class AcceptedState implements ProjectState {
 
    @Override
     public void startExecution(Project project) {
-        List<StudentDTO> estudiantes = studentService.getStudentsByProjectId(project.getId());
+        List<StudentDTO> estudiantes = studentService.getStudentsByProjectId(project.getId().toString());
 
         if (estudiantes.size() == 1) {
-            project.setState(ProjectStateEnum.IN_EXECUTION);;
+            project.setState(ProjectStateEnum.IN_EXECUTION);
         }
-
-        
     }
 }

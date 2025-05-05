@@ -8,14 +8,12 @@ public class ReceivedState implements ProjectState {
     @Override
     public void accept(Project project) {
         project.setState(ProjectStateEnum.ACCEPTED);
-        project.initState(); // Cambia la lógica interna del estado
         System.out.println("✅ Proyecto aprobado. Transición a estado: ACCEPTED");
     }
 
     @Override
     public void reject(Project project) {
         project.setState(ProjectStateEnum.REJECTED);
-        project.initState(); // Cambia la lógica interna del estado
         System.out.println("❌ Proyecto rechazado. Transición a estado: REJECTED");
     }
 

@@ -14,14 +14,6 @@ public class Student {
     @Column(name = "username", nullable = false)
     private String username;
     
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
@@ -87,5 +79,12 @@ public class Student {
 
     public void setProjectId(String projectId) {
         this.projectId = projectId;
+    }
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
