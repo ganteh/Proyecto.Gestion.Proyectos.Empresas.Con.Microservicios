@@ -1,12 +1,15 @@
 package com.example.coordination.messaging;
 
 import com.example.coordination.config.RabbitMQConfig;
-import com.example.coordination.dto.ProjectEventDTO;
+import com.example.coordination.dto.ProjectEvent;
 import com.example.coordination.entity.ProjectStateEnum;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.UUID;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
-
 
 @Service
 public class ProjectEventPublisher {
@@ -17,21 +20,22 @@ public class ProjectEventPublisher {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-
-    public void sendProjectStateChange(String projectId, String ProjectName, String CompanyNIT, ProjectStateEnum newState ) {
-        ProjectEventDTO event = new ProjectEventDTO(
+    public void sendProjectStateChange(UUID projectId, String projectName,String summary, String objectives, String description, int maxDurationMonths, BigDecimal budget, LocalDate startDate, String companyNIT, ProjectStateEnum newState) {
+        ProjectEvent event = new ProjectEvent(
                 projectId,
-                ProjectName,
-                CompanyNIT,
-                newState
+                projectName,
+                summary,
+                objectives,
+                description,
+                maxDurationMonths,
+                budget,
+                startDate,
+                companyNIT,
+                newState.toString()
         );
 
-        String routingKey = switch (newState.name().toUpperCase()) {
-            case "APPROVED" -> RabbitMQConfig.PROJECT_APPROVED_ROUTING_KEY;
-            case "REJECTED" -> RabbitMQConfig.PROJECT_REJECTED_ROUTING_KEY;
-            case "IN_EXECUTION" -> RabbitMQConfig.PROJECT_IN_EXECUTION_ROUTING_KEY;
-            default -> throw new IllegalArgumentException("Invalid state: " + newState);
-        };
+        // Usa una sola routing key que coincida con el comodín definido en la configuración
+        String routingKey = "project." + newState.name().toLowerCase();
 
         rabbitTemplate.convertAndSend(
                 RabbitMQConfig.PROJECT_EVENT_EXCHANGE,
@@ -39,7 +43,6 @@ public class ProjectEventPublisher {
                 event
         );
 
-        System.out.println("Mensaje enviado a RabbitMQ: " + event);
+        System.out.println("Mensaje enviado a RabbitMQ con routing key [" + routingKey + "]: " + event);
     }
-
 }

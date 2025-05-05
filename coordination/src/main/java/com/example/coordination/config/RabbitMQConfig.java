@@ -1,26 +1,24 @@
 package com.example.coordination.config;
 
 import org.springframework.amqp.core.*;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
 @Configuration
-@ConfigurationProperties(prefix = "app.rabbitmq")
 public class RabbitMQConfig {
 
-    // Nombre de la exchange (tipo topic)
+    // Exchange tipo topic
     public static final String PROJECT_EVENT_EXCHANGE = "project.events.exchange";
 
-    // Nombre de la cola única para todos los eventos de estado
+    // Cola unificada
     public static final String PROJECT_EVENTS_QUEUE = "project.events.queue";
 
-    // Routing keys
-    public static final String PROJECT_APPROVED_ROUTING_KEY = "project.approved";
-    public static final String PROJECT_REJECTED_ROUTING_KEY = "project.rejected";
-    public static final String PROJECT_IN_EXECUTION_ROUTING_KEY = "project.in_execution";
+    public static final String PROJECT_EVENTS_CRISTOBAL_QUEUE = "project.events.cristobal.queue";
 
+    // Routing key comodín para todos los eventos
+    public static final String PROJECT_EVENTS_ROUTING_KEY = "project.*";
+
+    
     @Bean
     public TopicExchange projectExchange() {
         return new TopicExchange(PROJECT_EVENT_EXCHANGE);
@@ -32,28 +30,29 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Binding approvedBinding() {
+    public Binding projectEventsBinding() {
         return BindingBuilder
                 .bind(projectEventsQueue())
                 .to(projectExchange())
-                .with(PROJECT_APPROVED_ROUTING_KEY);
+                .with(PROJECT_EVENTS_ROUTING_KEY);
     }
 
     @Bean
-    public Binding rejectedBinding() {
-        return BindingBuilder
-                .bind(projectEventsQueue())
-                .to(projectExchange())
-                .with(PROJECT_REJECTED_ROUTING_KEY);
+    public Queue projectEventsCristobalQueue() {
+        return new Queue(PROJECT_EVENTS_CRISTOBAL_QUEUE);
     }
 
     @Bean
-    public Binding inExecutionBinding() {
+    public Binding projectEventsCristobalBinding() {
         return BindingBuilder
-                .bind(projectEventsQueue())
+                .bind(projectEventsCristobalQueue())
                 .to(projectExchange())
-                .with(PROJECT_IN_EXECUTION_ROUTING_KEY);
+                .with(PROJECT_EVENTS_ROUTING_KEY);  // o "project.approved" si es más específico
     }
 
+    @Bean
+    public Queue studentQueue() {
+        return new Queue("student.queue");
+    }
 
 }

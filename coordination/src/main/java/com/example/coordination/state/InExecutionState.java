@@ -2,7 +2,6 @@ package com.example.coordination.state;
 
 import com.example.coordination.entity.Project;
 
-import java.util.List;
 
 public class InExecutionState implements ProjectState {
 

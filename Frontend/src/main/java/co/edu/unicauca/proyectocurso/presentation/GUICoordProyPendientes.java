@@ -11,6 +11,9 @@ import co.edu.unicauca.proyectocurso.domain.entities.*;
 import co.edu.unicauca.proyectocurso.domain.services.Observer;
 import co.edu.unicauca.proyectocurso.domain.services.ProjectService;
 import java.awt.BorderLayout;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Set;
@@ -186,27 +189,45 @@ public class GUICoordProyPendientes extends javax.swing.JFrame implements Observ
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
+    
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        int filaSeleccionada = jTable1.getSelectedRow();
-        if (filaSeleccionada >= 0) {
+    int filaSeleccionada = jTable1.getSelectedRow();
+    if (filaSeleccionada >= 0) {
             String nombreProyecto = (String) model.getValueAt(filaSeleccionada, 0);
-            Project proyecto = projectService.getPendingProjects()
+            Project proyecto = projectService.getPendingProjects() 
                     .stream().filter(p -> p.getName().equals(nombreProyecto))
                     .findFirst().orElse(null);
+            String idProyecto = proyecto.getId().toString();
 
-            if (proyecto != null) {
-                projectService.approveProject(proyecto);
-                JOptionPane.showMessageDialog(this, "Proyecto aprobado");
+        try {
+            // Llamada HTTP PUT al backend de coordinación
+            URL url = new URL("http://localhost:8081/api/projects/" + idProyecto + "/approve");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("PUT");
+            con.setDoOutput(true);
+
+            int responseCode = con.getResponseCode();
+            if (responseCode == 200) {
+                JOptionPane.showMessageDialog(this, "Proyecto aprobado correctamente.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al aprobar proyecto. Código: " + responseCode);
+            }
+
+            con.disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error en la conexión con el servidor.");
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Seleccione un proyecto");
+        JOptionPane.showMessageDialog(this, "Seleccione un proyecto");
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-         int filaSeleccionada = jTable1.getSelectedRow();
+        int filaSeleccionada = jTable1.getSelectedRow();
         String justificacion = jTextArea1.getText().trim();
 
         if (filaSeleccionada >= 0) {
@@ -221,8 +242,30 @@ public class GUICoordProyPendientes extends javax.swing.JFrame implements Observ
                     .findFirst().orElse(null);
 
             if (proyecto != null) {
-                projectService.rejectProject(proyecto, justificacion);
-                JOptionPane.showMessageDialog(this, "Proyecto rechazado con justificación: " + justificacion);
+                String idProyecto = proyecto.getId().toString();
+
+                try {
+                    // Llamada HTTP PUT al backend de coordinación para rechazar el proyecto
+                    URL url = new URL("http://localhost:8081/api/projects/" + idProyecto + "/reject");
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                    con.setRequestMethod("PUT");
+                    con.setDoOutput(true);
+
+                    // Enviar la justificación en el cuerpo de la solicitud
+                    con.getOutputStream().write(justificacion.getBytes());
+
+                    int responseCode = con.getResponseCode();
+                    if (responseCode == 200) {
+                        JOptionPane.showMessageDialog(this, "Proyecto rechazado con justificación: " + justificacion);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Error al rechazar proyecto. Código: " + responseCode);
+                    }
+
+                    con.disconnect();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Error en la conexión con el servidor.");
+                }
             }
         } else {
             JOptionPane.showMessageDialog(this, "Seleccione un proyecto");

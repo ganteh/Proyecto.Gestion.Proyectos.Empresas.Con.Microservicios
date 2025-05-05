@@ -2,11 +2,10 @@ package com.example.coordination.service;
 
 import com.example.coordination.entity.Project;
 import com.example.coordination.entity.ProjectStateEnum;
+import com.example.coordination.messaging.ProjectEventPublisher;
 import com.example.coordination.repository.ProjectRepository;
-import com.example.coordination.state.AcceptedState;
-import com.example.coordination.state.InExecutionState;
-import com.example.coordination.state.ReceivedState;
-import com.example.coordination.state.RejectedState;
+import com.example.coordination.state.ProjectState;
+
 
 import org.springframework.stereotype.Service;
 
@@ -18,67 +17,99 @@ import java.util.UUID;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final ProjectStateFactory stateFactory;
+    private final ProjectEventPublisher eventPublisher;
+    
 
-    public ProjectService(ProjectRepository projectRepository) {
+    public ProjectService(ProjectRepository projectRepository, ProjectStateFactory stateFactory, ProjectEventPublisher eventPublisher) {
         this.projectRepository = projectRepository;
+        this.stateFactory = stateFactory;
+        this.eventPublisher = eventPublisher;
     }
 
     public List<Project> getAll() {
         return projectRepository.findAll();
     }
 
-    public Optional<Project> getById(String id) {
+    public Optional<Project> getById(UUID id) {
         return projectRepository.findById(id);
     }
 
-    public Project approveProject(String projectId) {
+    public void acceptProject(UUID projectId) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new IllegalArgumentException("Proyecto no encontrado"));
-
+            .orElseThrow(() -> new IllegalArgumentException("Proyecto no encontrado con ID: " + projectId));
+    
+        ProjectState state = stateFactory.getState(project.getState());
+        state.accept(project);
+    
         project.setState(ProjectStateEnum.ACCEPTED);
-        Project saved = projectRepository.save(project);
-
-
-        return saved;
+        projectRepository.save(project);
+    
+        eventPublisher.sendProjectStateChange(
+            project.getId(),
+            project.getName(),
+            project.getSummary(),
+            project.getObjectives(),
+            project.getDescription(),
+            project.getMaxMonths(),
+            project.getBudget(), // Asegúrate de que este cast sea seguro
+            project.getStartDate(),
+            project.getCompanyNit(),
+            project.getState()
+        );
     }
 
-    public Project rejectProject(String projectId) {
+
+    public void rejectProject(UUID projectId) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new IllegalArgumentException("Proyecto no encontrado"));
+            .orElseThrow(() -> new IllegalArgumentException("Proyecto no encontrado"));
     
-        project.setState(ProjectStateEnum.REJECTED);
+        ProjectState state = stateFactory.getState(project.getState());
+        state.reject(project);
     
-        Project saved = projectRepository.save(project);
-
+        Project savedProject = projectRepository.save(project);
     
-        return saved;
+        eventPublisher.sendProjectStateChange(
+            savedProject.getId(),
+            savedProject.getName(),
+            savedProject.getSummary(),
+            savedProject.getObjectives(),
+            savedProject.getDescription(),
+            savedProject.getMaxMonths(),
+            savedProject.getBudget(),
+            savedProject.getStartDate(),
+            savedProject.getCompanyNit(),
+            savedProject.getState()
+        );
+    
     }
 
-    //state
-    public void initState() {
+    public void startExecution(UUID projectId) {
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
+
+        ProjectState stateInstance = stateFactory.getState(project.getState());
+        stateInstance.startExecution(project);
         
-        switch (state) {
-            case RECEIVED -> this.stateInstance = new ReceivedState();
-            case ACCEPTED -> this.stateInstance = new AcceptedState();
-            case IN_EXECUTION -> this.stateInstance = new InExecutionState();
-            case REJECTED -> this.stateInstance = new RejectedState();
-            default -> throw new IllegalStateException("Estado desconocido: " + state);
-        }
+        Project savedProject = projectRepository.save(project);
+        
+        eventPublisher.sendProjectStateChange(
+            savedProject.getId(),
+            savedProject.getName(),
+            savedProject.getSummary(),
+            savedProject.getObjectives(),
+            savedProject.getDescription(),
+            savedProject.getMaxMonths(),
+            savedProject.getBudget(),
+            savedProject.getStartDate(),
+            savedProject.getCompanyNit(),
+            savedProject.getState()
+        );
+        
+
+        projectRepository.save(project); // Persistimos el nuevo estado
     }
 
-    public void accept() {
-        if (stateInstance == null) initState();
-        stateInstance.accept(this);
-    }
 
-    public void reject() {
-        if (stateInstance == null) initState();
-        stateInstance.reject(this);
-    }
-
-    public void startExecution() {
-        if (stateInstance == null) initState();
-        stateInstance.startExecution(this);
-    }
 
 }
